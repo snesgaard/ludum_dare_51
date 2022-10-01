@@ -49,6 +49,19 @@ return function(ctx)
     ecs_world:entity(constants.id.miss_zone)
         :assemble(assemble.miss_zone, bump_world)
 
+    local scene_bound = spatial(
+        0, 0, constants:screen_width(), constants:screen_height()
+    ):expand(10, 10)
+
+    ecs_world:entity()
+        :assemble(assemble.negation_zone, scene_bound:up(), bump_world)
+    ecs_world:entity()
+        :assemble(assemble.negation_zone, scene_bound:down(), bump_world)
+    ecs_world:entity()
+        :assemble(assemble.negation_zone, scene_bound:left(), bump_world)
+    ecs_world:entity()
+        :assemble(assemble.negation_zone, scene_bound:right(), bump_world)
+
     ctx:to_cache("ecs_world", ecs_world)
     ctx:to_cache("bump_world", bump_world)
 
@@ -56,7 +69,8 @@ return function(ctx)
         nw.system.motion(ctx),
         require "system.projectile_spawn",
         require "system.projectile_speed",
-        require "system.hitzones"
+        require "system.hitzones",
+        require "system.rules"
     )
 
     local system_observables = systems:map(function(sys)

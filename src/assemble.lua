@@ -27,7 +27,7 @@ function assemble.hitzone(entity, y, bump_world)
     entity
         :assemble(
             nw.system.collision().assemble.init_entity, 100, y,
-            nw.component.hitbox(0, 0):expand(10, 20), bump_world
+            nw.component.hitbox(0, 0):expand(20, 20), bump_world
         )
         :set(nw.component.drawable, hitzone_draw)
 end
@@ -43,6 +43,16 @@ function assemble.miss_zone(entity, bump_world)
         :set(nw.component.drawable, nw.drawable.body)
         :set(nw.component.miss_zone)
 
+end
+
+function assemble.negation_zone(entity, body, bump_world)
+    entity
+        :assemble(
+            nw.system.collision().assemble.init_entity,
+            0, 0, body, bump_world
+        )
+        :set(nw.component.drawable, nw.drawable.body)
+        :set(nw.component.negation_zone)
 end
 
 return assemble

@@ -20,6 +20,10 @@ function component.health(hp) return hp or 3 end
 
 function component.miss_zone() return true end
 
+function component.negation_zone() return true end
+
 function component.miss_counted() return true end
+
+function component.already_counted() return true end
 
 return component
