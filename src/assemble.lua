@@ -32,4 +32,17 @@ function assemble.hitzone(entity, y, bump_world)
         :set(nw.component.drawable, hitzone_draw)
 end
 
+function assemble.miss_zone(entity, bump_world)
+    entity
+        :assemble(
+            nw.system.collision().assemble.init_entity,
+            0, constants:screen_height() / 2,
+            spatial(0, 0, 0, 0):expand(50, 1000),
+            bump_world
+        )
+        :set(nw.component.drawable, nw.drawable.body)
+        :set(nw.component.miss_zone)
+
+end
+
 return assemble

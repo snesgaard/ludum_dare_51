@@ -8,7 +8,13 @@ function projectile.update_multipliers(dt, ecs_world)
     if not timer:update(dt) then return end
     timer:reset()
 
-    --TODO increase speed
+    local mul = ecs_world:ensure(
+        nw.component.velocity_multiplier,
+        constants.id.global
+    )
+    ecs_world:set(
+        nw.component.velocity_multiplier, constants.id.global, mul + 0.5
+    )
 end
 
 function projectile.set_speed(ecs_world)
@@ -18,7 +24,7 @@ function projectile.set_speed(ecs_world)
 
     for id, base_velocity in pairs(entity_to_multiply) do
         local velocity_multiplier = ecs_world:ensure(
-            nw.component.velocity_multiplier, id
+            nw.component.velocity_multiplier, constants.id.global
         )
         local v = base_velocity * velocity_multiplier
         ecs_world:set(nw.component.velocity, id, v:unpack())

@@ -12,8 +12,10 @@ function projectile_spawn.handle_update(dt, ecs_world, bump_world)
     local timer = ecs_world:ensure(
         nw.component.timer.create, constants.id.global, 0.5
     )
-
-    if not timer:update(dt) then return end
+    local mul = ecs_world:ensure(
+        nw.component.velocity_multiplier, constants.id.global
+    )
+    if not timer:update(dt * mul) then return end
     timer:reset()
 
     local rng = love.math.random(1, constants.lanes:size())
@@ -46,5 +48,7 @@ function projectile_spawn.handle_observables(ctx, obs, ecs_world, ...)
 
     return projectile_spawn.handle_observables(ctx, obs, ...)
 end
+
+
 
 return projectile_spawn

@@ -1,5 +1,29 @@
 local painter = require "painter"
 
+local font = gfx.newFont(32)
+
+local function draw_ui(ecs_world)
+    local health = ecs_world:ensure(nw.component.health, constants.id.global)
+    local hit_count = ecs_world:ensure(
+        nw.component.hit_counter, constants.id.global
+    )
+
+    gfx.push("all")
+
+    gfx.translate(10, 10)
+
+    gfx.setFont(font)
+    gfx.setColor(1, 1, 1)
+    gfx.printf(string.format("%i", hit_count), 10, 0, 50, "left")
+
+    gfx.translate(0, 40)
+    gfx.setColor(1, 0, 0)
+
+    for i = 1, health do gfx.circle("fill", i * 15, 0, 5) end
+
+    gfx.pop()
+end
+
 local function draw_scene(ecs_world)
     gfx.push("all")
     gfx.scale(constants.scale, constants.scale)
@@ -21,6 +45,9 @@ return function(ctx)
         local y = constants.lanes[index]
         ecs_world:entity(id):assemble(assemble.hitzone, y, bump_world)
     end
+
+    ecs_world:entity(constants.id.miss_zone)
+        :assemble(assemble.miss_zone, bump_world)
 
     ctx:to_cache("ecs_world", ecs_world)
     ctx:to_cache("bump_world", bump_world)
@@ -47,6 +74,7 @@ return function(ctx)
 
         for _, _ in ipairs(draw:pop()) do
             draw_scene(ecs_world)
+            draw_ui(ecs_world)
         end
 
         ctx:yield()

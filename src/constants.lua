@@ -5,6 +5,7 @@ local constants = {
         lowzone = "lowzone",
         highzone = "highzone",
         spawner = "spawner",
+        misszone = "misszone",
         hitzones = {up = "up", down = "down"}
     },
     types = {
@@ -26,6 +27,10 @@ constants.id.hitzones = constants.lanes:map(
 
 function constants.screen_width()
     return gfx.getWidth() / constants.scale
+end
+
+function constants.screen_height()
+    return gfx.getHeight() / constants.scale
 end
 
 return constants
