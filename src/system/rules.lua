@@ -80,6 +80,17 @@ function rules.hitzone_done(ctx, ecs_world, id)
     if ecs_world:get(nw.component.already_counted, id) then return end
 end
 
+function rules.update(ctx, ecs_world, dt)
+    local timer = ecs_world:get(
+        nw.component.player_state_decay, constants.id.player
+    )
+    if not timer then return end
+    if timer:update(dt) then
+        ecs_world:remove(nw.component.player_state_decay, constants.id.player)
+        ecs_world:remove(nw.component.player_state, constants.id.player)
+    end
+end
+
 function rules.keypressed(ctx, ecs_world, key)
     local index_from_key = {up = 1, down = 2}
     local index = index_from_key[key]
@@ -88,6 +99,21 @@ function rules.keypressed(ctx, ecs_world, key)
     if not id then return end
     ecs_world:set(nw.component.hitzone_activation, id)
     ecs_world:remove(nw.component.already_counted, false)
+    if key == "up" then
+        ecs_world:set(
+            nw.component.player_state, constants.id.player, "upper_hit"
+        )
+        ecs_world:set(
+            nw.component.player_state_decay, constants.id.player
+        )
+    elseif key == "down" then
+        ecs_world:set(
+            nw.component.player_state, constants.id.player, "lower_hit"
+        )
+        ecs_world:set(
+            nw.component.player_state_decay, constants.id.player
+        )
+    end
 end
 
 local api = {}

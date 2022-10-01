@@ -1,4 +1,7 @@
 nw = require "nodeworks"
+
+love.graphics.setDefaultFilter("nearest", "nearest")
+
 constants = require "constants"
 assemble = require "assemble"
 

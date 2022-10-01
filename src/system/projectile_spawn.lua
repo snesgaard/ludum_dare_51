@@ -18,8 +18,9 @@ function projectile_spawn.handle_update(dt, ecs_world, bump_world)
     if not timer:update(dt * mul) then return end
     timer:reset()
 
-    local rng = love.math.random(1, constants.lanes:size())
-    local lane_y = constants.lanes[rng]
+    local lanes = constants.world_lanes()
+    local rng = love.math.random(1, lanes:size())
+    local lane_y = lanes[rng]
     projectile_spawn.spawn(ecs_world, constants.screen_width() - 50, lane_y, bump_world)
 end
 

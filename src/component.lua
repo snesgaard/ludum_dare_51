@@ -11,7 +11,7 @@ function component.time_before_speedup(time)
 end
 
 function component.hitzone_activation()
-    return nw.component.timer.create(0.1)
+    return nw.component.timer.create(constants.swing_decay)
 end
 
 function component.hit_counter(c) return c or 0 end
@@ -25,5 +25,11 @@ function component.negation_zone() return true end
 function component.miss_counted() return true end
 
 function component.already_counted() return true end
+
+function component.player_state(state) return state or "idle" end
+
+function component.player_state_decay()
+    return nw.component.timer.create(constants.swing_decay)
+end
 
 return component

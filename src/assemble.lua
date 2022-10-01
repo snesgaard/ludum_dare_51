@@ -43,11 +43,11 @@ local function hitzone_draw(entity)
     return nw.drawable.body(entity)
 end
 
-function assemble.hitzone(entity, y, bump_world)
+function assemble.hitzone(entity, x, y, hitbox, bump_world)
     entity
         :assemble(
-            nw.system.collision().assemble.init_entity, 100, y,
-            nw.component.hitbox(0, 0):expand(20, 20), bump_world
+            nw.system.collision().assemble.init_entity, x, y,
+            hitbox, bump_world
         )
         :set(nw.component.drawable, hitzone_draw)
 end
@@ -73,6 +73,33 @@ function assemble.negation_zone(entity, body, bump_world)
         )
         :set(nw.component.drawable, nw.drawable.body)
         :set(nw.component.negation_zone)
+end
+
+local function get_player_frame(entity)
+    local state = entity:ensure(nw.component.player_state)
+
+    local state_map = {
+        idle = get_atlas("art/characters"):get_frame("batter/idle"),
+        upper_hit = get_atlas("art/characters"):get_frame("batter/high_swing"),
+        lower_hit = get_atlas("art/characters"):get_frame("batter/low_swing")
+    }
+
+    return state_map[state] or state_map.idle
+end
+
+local function draw_player(entity)
+    local frame = get_player_frame(entity)
+    gfx.push("all")
+    nw.drawable.push_transform(entity)
+    nw.drawable.push_state(entity)
+    frame:draw("body", 0, 0)
+    gfx.pop()
+end
+
+function assemble.player(entity, x, y)
+    entity
+        :set(nw.component.position, x, y)
+        :set(nw.component.drawable, draw_player)
 end
 
 return assemble
