@@ -1,15 +1,35 @@
 local assemble = {}
 
+local function roll_projectile_type()
+    local r = love.math.random()
+
+    if r < 0.2 then return "tomato" end
+
+    return "ball"
+end
+
+local function projectile_draw(entity)
+    local ptype = entity:get(nw.component.projectile)
+
+    local colors = {
+        tomato = color(1, 0.2, 0.1),
+        ball = color(1, 1, 1)
+    }
+
+    entity:set(nw.component.color, colors[ptype])
+    return nw.drawable.body(entity)
+end
+
 function assemble.projectile(entity, x, y, bump_world)
     entity
         :assemble(
             nw.system.collision().assemble.init_entity, x, y,
             nw.component.hitbox(4, 4), bump_world
         )
-        :set(nw.component.drawable, nw.drawable.body)
+        :set(nw.component.drawable, projectile_draw)
         :set(nw.component.color, 1, 1, 1)
         :set(nw.component.base_velocity, -100, 0)
-        :set(nw.component.projectile, "ball")
+        :set(nw.component.projectile, roll_projectile_type())
 end
 
 local function hitzone_draw(entity)

@@ -14,19 +14,9 @@ function hitzones.handle_update(ctx, dt, ecs_world)
 
 end
 
-function hitzones.handle_keypressed(key, ecs_world)
-    local index_from_key = {up = 1, down = 2}
-    local index = index_from_key[key]
-    if not index then return end
-    local id = constants.id.hitzones[index]
-    if not id then return end
-    ecs_world:set(nw.component.hitzone_activation, id)
-end
-
 function hitzones.observables(ctx)
     return {
-        update = ctx:listen("update"):collect(),
-        keypressed = ctx:listen("keypressed"):collect()
+        update = ctx:listen("update"):collect()
     }
 end
 
@@ -35,10 +25,6 @@ function hitzones.handle_observables(ctx, obs, ecs_world, ...)
 
     for _, dt in ipairs(obs.update:peek()) do
         hitzones.handle_update(ctx, dt, ecs_world)
-    end
-
-    for _, key in ipairs(obs.keypressed:peek()) do
-        hitzones.handle_keypressed(key, ecs_world)
     end
 
     return hitzones.handle_observables(ctx, obs, ...)

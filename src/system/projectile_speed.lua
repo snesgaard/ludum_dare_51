@@ -13,7 +13,7 @@ function projectile.update_multipliers(dt, ecs_world)
         constants.id.global
     )
     ecs_world:set(
-        nw.component.velocity_multiplier, constants.id.global, mul + 0.5
+        nw.component.velocity_multiplier, constants.id.global, mul + 0.25
     )
 end
 

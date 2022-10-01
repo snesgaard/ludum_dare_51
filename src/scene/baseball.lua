@@ -22,6 +22,26 @@ local function draw_ui(ecs_world)
     for i = 1, health do gfx.circle("fill", i * 15, 0, 5) end
 
     gfx.pop()
+
+    gfx.push("all")
+
+    gfx.translate(gfx.getWidth(), 0)
+    gfx.translate(-20, 20)
+
+    local counter_box = spatial(0, 0, 10, 100)
+    local timer = ecs_world:get(nw.component.time_before_speedup, constants.id.global)
+    local s = timer.time / timer.duration
+
+    gfx.setColor(0.5, 0.5, 0.5)
+    gfx.rectangle("fill", counter_box:unpack())
+    gfx.setColor(1, 1, 1)
+    gfx.rectangle(
+        "fill",
+        counter_box.x, counter_box.y + counter_box.h * (1 - s),
+        counter_box.w, counter_box.h * s
+    )
+
+    gfx.pop()
 end
 
 local function draw_scene(ecs_world)
@@ -37,7 +57,7 @@ function collision_class.default_filter()
     return "cross"
 end
 
-return function(ctx)
+local function baseball(ctx)
     local ecs_world = nw.ecs.entity.create()
     local bump_world = nw.third.bump.newWorld()
 
@@ -52,6 +72,8 @@ return function(ctx)
     local scene_bound = spatial(
         0, 0, constants:screen_width(), constants:screen_height()
     ):expand(10, 10)
+
+    ecs_world:set(nw.component.health, constants.id.global, 3)
 
     ecs_world:entity()
         :assemble(assemble.negation_zone, scene_bound:up(), bump_world)
@@ -79,7 +101,7 @@ return function(ctx)
 
     local draw = ctx:listen("draw"):collect()
 
-    while ctx:is_alive() do
+    while ctx:is_alive() and 0 < ecs_world:ensure(nw.component.health, constants.id.global) do
         for i = 1, system_observables:size() do
             local sys = systems[i]
             local obs = system_observables[i]
@@ -93,4 +115,8 @@ return function(ctx)
 
         ctx:yield()
     end
+
+    return baseball(ctx)
 end
+
+return baseball

@@ -12,13 +12,7 @@ function collision.hitzone(ctx, ecs_world, colinfo)
 
     if other_activation:done() then return end
 
-    ecs_world:destroy(colinfo.item)
-    ecs_world:map(
-        nw.component.hit_counter,
-        constants.id.global,
-        function(c) return c + 1 end
-    )
-    ecs_world:set(nw.component.already_counted, colinfo.other)
+    ctx:emit("hitzone_impact", {hitzone=colinfo.other, projectile=colinfo.item})
 end
 
 function collision.misszone(ctx, ecs_world, colinfo)
@@ -30,8 +24,8 @@ function collision.misszone(ctx, ecs_world, colinfo)
     local already_counted = ecs_world:get(nw.component.already_counted, colinfo.item)
     if already_counted then return end
 
+    if item_projectile ~= "tomato" then ctx:emit("take_damage") end
     ecs_world:set(nw.component.already_counted, colinfo.item)
-    ctx:emit("take_damage")
 end
 
 function collision.negation_zone(ctx, ecs_world, colinfo)
@@ -52,6 +46,30 @@ function rules.take_damage(ctx, ecs_world)
     )
 end
 
+function rules.hitzone_impact(ctx, ecs_world, args)
+    local proj_type = ecs_world:get(nw.component.projectile, args.projectile)
+
+    if not proj_type then return end
+
+    if ecs_world:get(nw.component.already_counted, args.projectile) then
+        return
+    end
+
+    if proj_type == "ball" then
+        ecs_world:map(
+            nw.component.hit_counter,
+            constants.id.global,
+            function(c) return c + 1 end
+        )
+    elseif proj_type == "tomato" then
+        ctx:emit("take_damage")
+    end
+
+    ecs_world:set(nw.component.base_velocity, args.projectile, 200, -200)
+    ecs_world:set(nw.component.already_counted, args.projectile)
+    ecs_world:set(nw.component.already_counted, args.hitzone)
+end
+
 function rules.collision(ctx, ecs_world, colinfo)
     collision.hitzone(ctx, ecs_world, colinfo)
     collision.misszone(ctx, ecs_world, colinfo)
@@ -60,7 +78,16 @@ end
 
 function rules.hitzone_done(ctx, ecs_world, id)
     if ecs_world:get(nw.component.already_counted, id) then return end
-    ctx:emit("take_damage")
+end
+
+function rules.keypressed(ctx, ecs_world, key)
+    local index_from_key = {up = 1, down = 2}
+    local index = index_from_key[key]
+    if not index then return end
+    local id = constants.id.hitzones[index]
+    if not id then return end
+    ecs_world:set(nw.component.hitzone_activation, id)
+    ecs_world:remove(nw.component.already_counted, false)
 end
 
 local api = {}
