@@ -1,3 +1,13 @@
+local sound = require "sound"
+
+local function play_speed()
+    local s = list(sound.speed, sound.faster)
+    local index = love.math.random(1, s:size())
+    local audio = s[index]
+    audio:stop()
+    audio:play()
+end
+
 local projectile = {}
 
 function projectile.update_multipliers(dt, ecs_world)
@@ -15,6 +25,7 @@ function projectile.update_multipliers(dt, ecs_world)
     ecs_world:set(
         nw.component.velocity_multiplier, constants.id.global, mul + 0.25
     )
+    play_speed()
 end
 
 function projectile.set_speed(ecs_world)

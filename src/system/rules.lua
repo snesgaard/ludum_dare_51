@@ -129,6 +129,12 @@ function rules.update(ctx, ecs_world, dt)
     end
 end
 
+local function play_woosh()
+    sound.woosh:setVolume(0.1)
+    sound.woosh:stop()
+    sound.woosh:play()
+end
+
 function rules.keypressed(ctx, ecs_world, key)
     local index_from_key = {up = 1, down = 2}
     local index = index_from_key[key]
@@ -146,6 +152,7 @@ function rules.keypressed(ctx, ecs_world, key)
             nw.component.player_state_decay, constants.id.player
         )
         nw.system.animation(ctx):play_once(entity, animations.player.upper_hit)
+        play_woosh()
     elseif key == "down" then
         ecs_world:set(
             nw.component.player_state, constants.id.player, "lower_hit"
@@ -154,6 +161,7 @@ function rules.keypressed(ctx, ecs_world, key)
             nw.component.player_state_decay, constants.id.player
         )
         nw.system.animation(ctx):play_once(entity, animations.player.lower_hit)
+        play_woosh()
     end
 end
 
