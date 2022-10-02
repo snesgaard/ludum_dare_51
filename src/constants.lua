@@ -6,6 +6,7 @@ local constants = {
         highzone = "highzone",
         spawner = "spawner",
         misszone = "misszone",
+        thrower = "thrower",
         hitzones = {up = "up", down = "down"}
     },
     types = {
@@ -33,6 +34,10 @@ end
 
 function constants.screen_height()
     return gfx.getHeight() / constants.scale
+end
+
+function constants.thrower_x()
+    return constants.screen_width() - 40
 end
 
 function constants.actor_floor()

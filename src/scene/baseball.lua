@@ -114,7 +114,14 @@ local function baseball(ctx)
         :assemble(assemble.negation_zone, scene_bound:right(), bump_world)
 
     ecs_world:entity(constants.id.player)
-        :assemble(assemble.player, 100, constants.actor_floor())
+        :assemble(
+            assemble.player, constants.batter_x, constants.actor_floor()
+        )
+
+    ecs_world:entity(constants.id.thrower)
+        :assemble(
+            assemble.thrower, constants.thrower_x(), constants.actor_floor()
+        )
 
     ctx:to_cache("ecs_world", ecs_world)
     ctx:to_cache("bump_world", bump_world)

@@ -21,7 +21,20 @@ function projectile_spawn.handle_update(dt, ecs_world, bump_world)
     local lanes = constants.world_lanes()
     local rng = love.math.random(1, lanes:size())
     local lane_y = lanes[rng]
-    projectile_spawn.spawn(ecs_world, constants.screen_width() - 50, lane_y, bump_world)
+    projectile_spawn.spawn(
+        ecs_world, constants.screen_width() - 50, lane_y, bump_world
+    )
+
+    local thrower_entity = ecs_world:entity(constants.id.thrower)
+    if rng == 1 then
+        nw.system.animation():play_once(
+            thrower_entity, animations.thrower.up_throw
+        )
+    else
+        nw.system.animation():play_once(
+            thrower_entity, animations.thrower.low_throw
+        )
+    end
 end
 
 function projectile_spawn.observables(ctx)

@@ -103,4 +103,12 @@ function assemble.player(entity, x, y)
     nw.system.animation():play(entity, animations.player.idle)
 end
 
+function assemble.thrower(entity, x, y)
+    entity
+        :set(nw.component.position, x, y)
+        :set(nw.component.drawable, nw.drawable.animation)
+
+    nw.system.animation():play(entity, animations.thrower.idle)
+end
+
 return assemble
