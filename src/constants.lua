@@ -22,7 +22,6 @@ local constants = {
     swing_decay = 0.2
 }
 
-
 constants.id.hitzones = constants.lanes:map(
     function(y) return "hitzone:" .. tostring(y) end
 )
@@ -41,7 +40,21 @@ function constants.thrower_x()
 end
 
 function constants.actor_floor()
-    return constants.screen_height() - 40
+    local frame = get_atlas("art/characters"):get_frame("background")
+    local player_slice = frame.slices.player
+    return player_slice:centerbottom().y
+end
+
+function constants.player_position()
+    local frame = get_atlas("art/characters"):get_frame("background")
+    local player_slice = frame.slices.player
+    return player_slice:centerbottom()
+end
+
+function constants.thrower_position()
+    local frame = get_atlas("art/characters"):get_frame("background")
+    local player_slice = frame.slices.thrower
+    return player_slice:centerbottom()
 end
 
 function constants.base_lanes()

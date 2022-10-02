@@ -51,6 +51,19 @@ function painter.paint_text(text, x, y, w, h, opt, sx, sy)
     gfx.printf(text, x, y + dy, w, opt.align or "left")
 end
 
+function painter.paint_background(dim)
+    local frame = get_atlas("art/characters"):get_frame("background")
+    gfx.push("all")
 
+    frame:draw(0, 0)
+    if dim then
+        gfx.setColor(0.1, 0.2, 0.4, 0.3)
+        gfx.rectangle(
+            "fill", 0, 0, constants.screen_width(), constants.screen_height()
+        )
+    end
+
+    gfx.pop()
+end
 
 return painter

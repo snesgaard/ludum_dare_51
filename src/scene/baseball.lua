@@ -60,13 +60,11 @@ down :: hit down
     painter.paint_textbox(control_str, lower_corner, opt)
 end
 
-local function draw_scene(ecs_world)
+local function draw_scene(ecs_world, dim)
     gfx.push("all")
     gfx.scale(constants.scale, constants.scale)
+    painter.paint_background(dim)
     painter.paint_scene(ecs_world)
-    local atlas = get_atlas("art/characters")
-    local frame = atlas:get_frame("batter/idle")
-    frame:draw(0, 0)
     gfx.pop()
 end
 
@@ -89,7 +87,7 @@ local function baseball(ctx)
 
     for index, id in ipairs(constants.id.hitzones) do
         local y = constants.actor_floor()
-        local x = constants.batter_x
+        local x = constants.player_position().x
         local hb = hitzones[index]
         ecs_world:entity(id)
             :assemble(assemble.hitzone, x, y, hb, bump_world)
@@ -115,12 +113,12 @@ local function baseball(ctx)
 
     ecs_world:entity(constants.id.player)
         :assemble(
-            assemble.player, constants.batter_x, constants.actor_floor()
+            assemble.player, constants.player_position():unpack()
         )
 
     ecs_world:entity(constants.id.thrower)
         :assemble(
-            assemble.thrower, constants.thrower_x(), constants.actor_floor()
+            assemble.thrower, constants.thrower_position():unpack()
         )
 
     ctx:to_cache("ecs_world", ecs_world)
@@ -145,6 +143,9 @@ local function baseball(ctx)
         :filter(function(key) return key == "p" end)
         :reduce(function(state) return not state end, false)
 
+    local dim = ctx:listen("keypressed")
+        :filter(function(key) return key == "d" end)
+        :reduce(function(state) return not state end, false)
 
     while ctx:is_alive() and 0 < ecs_world:ensure(nw.component.health, constants.id.global) do
         if not pause:peek() then
@@ -156,7 +157,7 @@ local function baseball(ctx)
         end
 
         for _, _ in ipairs(draw:pop()) do
-            draw_scene(ecs_world)
+            draw_scene(ecs_world, dim:peek())
             draw_ui(ecs_world)
         end
 
