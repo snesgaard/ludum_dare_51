@@ -1,7 +1,5 @@
 local painter = require "painter"
 
-local font = gfx.newFont(32)
-
 local function draw_end_screen(ecs_world)
     gfx.push("all")
     gfx.setFont(font)
@@ -19,9 +17,9 @@ local function draw_ui(ecs_world)
 
     gfx.translate(10, 10)
 
-    gfx.setFont(font)
+    gfx.setFont(painter.font)
     gfx.setColor(1, 1, 1)
-    gfx.printf(string.format("%i", hit_count), 10, 0, 50, "left")
+    gfx.printf(string.format("%i", hit_count), 10, 0, 100, "left")
 
     gfx.translate(0, 40)
     gfx.setColor(1, 0, 0)
@@ -36,7 +34,7 @@ local function draw_ui(ecs_world)
     gfx.translate(-20, 20)
 
     local counter_box = spatial(0, 0, 10, 100)
-    local timer = ecs_world:get(nw.component.time_before_speedup, constants.id.global)
+    local timer = ecs_world:ensure(nw.component.time_before_speedup, constants.id.global)
     local s = timer.time / timer.duration
 
     gfx.setColor(0.5, 0.5, 0.5)
@@ -47,7 +45,6 @@ local function draw_ui(ecs_world)
         counter_box.x, counter_box.y + counter_box.h * (1 - s),
         counter_box.w, counter_box.h * s
     )
-
     gfx.pop()
 end
 
@@ -77,7 +74,6 @@ local function baseball(ctx)
         constants.upper_swing_box(),
         constants.lower_swing_box()
     }
-
 
     for index, id in ipairs(constants.id.hitzones) do
         local y = constants.actor_floor()
@@ -125,14 +121,22 @@ local function baseball(ctx)
 
     local draw = ctx:listen("draw"):collect()
 
+    local pause = ctx:listen("keypressed")
+        :filter(function(key) return key == "p" end)
+        :reduce(function(state) return not state end, false)
+
+
     while ctx:is_alive() and 0 < ecs_world:ensure(nw.component.health, constants.id.global) do
-        for i = 1, system_observables:size() do
-            local sys = systems[i]
-            local obs = system_observables[i]
-            sys.handle_observables(ctx, obs, ecs_world)
+        if not pause:peek() then
+            for i = 1, system_observables:size() do
+                local sys = systems[i]
+                local obs = system_observables[i]
+                sys.handle_observables(ctx, obs, ecs_world)
+            end
         end
 
         for _, _ in ipairs(draw:pop()) do
+            print("draw")
             draw_scene(ecs_world)
             draw_ui(ecs_world)
         end
@@ -140,10 +144,15 @@ local function baseball(ctx)
         ctx:yield()
     end
 
-    while ctx:is_alive() do
+    local replay = ctx:listen("keypressed")
+        :filter(function(key) return key == "r" end)
+        :latest()
+
+    while ctx:is_alive() and not replay:peek() do
         for _, _ in ipairs(draw:pop()) do
             draw_scene(ecs_world)
             draw_ui(ecs_world)
+            painter.paint_finish(ecs_world)
         end
         ctx:yield()
     end
