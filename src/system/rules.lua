@@ -65,8 +65,14 @@ function rules.hitzone_impact(ctx, ecs_world, args)
         ctx:emit("take_damage")
     end
 
-    ecs_world:set(nw.component.base_velocity, args.projectile, 200, -200)
-    ecs_world:set(nw.component.already_counted, args.projectile)
+    if proj_type == "tomato" then
+        local pos = ecs_world:get(nw.component.position, args.projectile)
+        ecs_world:destroy(args.projectile)
+        ecs_world:entity():assemble(assemble.tomato_splat, pos.x, pos.y)
+    else
+        ecs_world:set(nw.component.base_velocity, args.projectile, 200, -200)
+        ecs_world:set(nw.component.already_counted, args.projectile)
+    end
     ecs_world:set(nw.component.already_counted, args.hitzone)
 end
 
@@ -81,9 +87,21 @@ function rules.hitzone_done(ctx, ecs_world, id)
 end
 
 function rules.update(ctx, ecs_world, dt)
+    local particle_entities = ecs_world:get_component_table(
+        nw.component.particles
+    )
+
+    for id, particle in pairs(particle_entities) do
+        particle:update(dt)
+        if particle:getCount() == 0 and ecs_world:get(nw.component.die_on_empty, id) then
+            ecs_world:destroy(id)
+        end
+    end
+
     local timer = ecs_world:get(
         nw.component.player_state_decay, constants.id.player
     )
+
     if not timer then return end
     if timer:update(dt) then
         ecs_world:remove(nw.component.player_state_decay, constants.id.player)

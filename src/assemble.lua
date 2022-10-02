@@ -69,7 +69,7 @@ function assemble.miss_zone(entity, bump_world)
             spatial(0, 0, 0, 0):expand(50, 1000),
             bump_world
         )
-        :set(nw.component.drawable, nw.drawable.body)
+        --:set(nw.component.drawable, nw.drawable.body)
         :set(nw.component.miss_zone)
 
 end
@@ -109,6 +109,31 @@ function assemble.thrower(entity, x, y)
         :set(nw.component.drawable, nw.drawable.animation)
 
     nw.system.animation():play(entity, animations.thrower.idle)
+end
+
+local tomato_particle = gfx.prerender(4, 4, function(w, h)
+    gfx.setColor(1, 1, 1)
+    gfx.circle("fill", w / 2, h / 2, w / 2)
+end)
+function assemble.tomato_splat(entity, x, y)
+    entity
+        :set(nw.component.position, x, y)
+        :set(
+            nw.component.particles,
+            {
+                image = tomato_particle,
+                buffer = 20,
+                emit = 20,
+                lifetime = {0.25, 0.5},
+                spread = math.pi * 0.5,
+                dir = -math.pi * 0.5,
+                speed = {100, 200},
+                acceleration = {0, 500},
+                color = color("c44132")
+            }
+        )
+        :set(nw.component.die_on_empty)
+        :set(nw.component.drawable, nw.drawable.particles)
 end
 
 return assemble

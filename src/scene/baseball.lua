@@ -19,7 +19,7 @@ local function draw_ui(ecs_world)
 
     gfx.setFont(painter.font)
     gfx.setColor(1, 1, 1)
-    gfx.printf(string.format("%i", hit_count), 10, 0, 100, "left")
+    gfx.printf(string.format("Score: %i", hit_count), 10, 0, 200, "left")
 
     gfx.translate(0, 40)
     gfx.setColor(1, 0, 0)
@@ -145,7 +145,9 @@ local function baseball(ctx)
 
     local dim = ctx:listen("keypressed")
         :filter(function(key) return key == "d" end)
-        :reduce(function(state) return not state end, false)
+        :reduce(function(state) return not state end, true)
+
+    ecs_world:entity():assemble(assemble.tomato_splat, 100, 100)
 
     while ctx:is_alive() and 0 < ecs_world:ensure(nw.component.health, constants.id.global) do
         if not pause:peek() then
@@ -170,7 +172,7 @@ local function baseball(ctx)
 
     while ctx:is_alive() and not replay:peek() do
         for _, _ in ipairs(draw:pop()) do
-            draw_scene(ecs_world)
+            draw_scene(ecs_world, true)
             draw_ui(ecs_world)
             painter.paint_finish(ecs_world)
         end

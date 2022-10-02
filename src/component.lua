@@ -32,4 +32,6 @@ function component.player_state_decay()
     return nw.component.timer.create(constants.swing_decay)
 end
 
+function component.die_on_empty() return true end
+
 return component
