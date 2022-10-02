@@ -1,3 +1,5 @@
+local sound = require "sound"
+
 local collision = {}
 
 function collision.hitzone(ctx, ecs_world, colinfo)
@@ -48,6 +50,8 @@ function rules.take_damage(ctx, ecs_world)
         nw.component.health, constants.id.global,
         function(hp) return math.max(0, hp - 1) end
     )
+    sound.mistake:stop()
+    sound.mistake:play()
 end
 
 function rules.increment_score(ctx, ecs_world)
@@ -56,6 +60,13 @@ function rules.increment_score(ctx, ecs_world)
         constants.id.global,
         function(c) return c + 1 end
     )
+end
+
+local function play_hit_sound()
+    local s = sound.hit
+    local rng = love.math.random(1, s:size())
+    for _, a in ipairs(s) do a:stop() end
+    s[rng]:play()
 end
 
 function rules.hitzone_impact(ctx, ecs_world, args)
@@ -80,6 +91,7 @@ function rules.hitzone_impact(ctx, ecs_world, args)
     else
         ecs_world:set(nw.component.base_velocity, args.projectile, 200, -200)
         ecs_world:set(nw.component.already_counted, args.projectile)
+        play_hit_sound()
     end
     ecs_world:set(nw.component.already_counted, args.hitzone)
 end

@@ -1,9 +1,10 @@
 local painter = require "painter"
+local sound = require "sound"
 
 local CounterDowner = class()
 
 CounterDowner.interval = 1
-CounterDowner.messages = list("3", "2", "1", "Let's Bat!")
+CounterDowner.messages = list("Ready?", "Let's Bat!")
 
 local function create_msg_timer(msg)
     return {msg = msg, timer = nw.component.timer.create(CounterDowner.interval)}
@@ -79,6 +80,9 @@ return function(ctx, ecs_world)
 
     local draw = ctx:listen("draw"):collect()
     local update = ctx:listen("update"):collect()
+
+    sound.lets_bat:stop()
+    sound.lets_bat:play()
 
     while ctx:is_alive() and not countdown:is_done() do
         for i = 1, system_observables:size() do
