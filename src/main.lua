@@ -4,6 +4,7 @@ love.graphics.setDefaultFilter("nearest", "nearest")
 
 constants = require "constants"
 assemble = require "assemble"
+animations = require "animation"
 
 decorate(nw.component, require "component")
 

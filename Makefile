@@ -1,4 +1,4 @@
-title=LD51
+title=most_stressed_batter_LD51
 
 linux_binary=build/$(title)_linux.zip
 windows_zip=build/$(title)_win64.zip
@@ -64,9 +64,8 @@ $(love_win64_zip):
 $(love_win64): $(love_win64_zip)
 	cd build; unzip love-11.3-win64.zip
 
-$(love_file):
+$(love_file): build
 	@mkdir -p $(dir $@)
-	#make -C src/art
 	cd src; zip -9 -r ../$@ .
 
 .PHONY: build

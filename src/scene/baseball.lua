@@ -46,6 +46,18 @@ local function draw_ui(ecs_world)
         counter_box.w, counter_box.h * s
     )
     gfx.pop()
+
+    local control_str = [[
+CONTROLS
+---------
+up :: hit up
+down :: hit down
+    ]]
+    local lower_corner = spatial(0, gfx.getHeight(), 200, 100)
+        :up()
+        :move(20, -20)
+    local opt = {font=painter.small_font, align = "left", valign="top", margin=10}
+    painter.paint_textbox(control_str, lower_corner, opt)
 end
 
 local function draw_scene(ecs_world)
@@ -109,6 +121,7 @@ local function baseball(ctx)
 
     local systems = list(
         nw.system.motion(ctx),
+        nw.system.animation(ctx),
         require "system.projectile_spawn",
         require "system.projectile_speed",
         require "system.hitzones",
@@ -136,7 +149,6 @@ local function baseball(ctx)
         end
 
         for _, _ in ipairs(draw:pop()) do
-            print("draw")
             draw_scene(ecs_world)
             draw_ui(ecs_world)
         end

@@ -99,6 +99,7 @@ function rules.keypressed(ctx, ecs_world, key)
     if not id then return end
     ecs_world:set(nw.component.hitzone_activation, id)
     ecs_world:remove(nw.component.already_counted, false)
+    local entity = ecs_world:entity(constants.id.player)
     if key == "up" then
         ecs_world:set(
             nw.component.player_state, constants.id.player, "upper_hit"
@@ -106,6 +107,7 @@ function rules.keypressed(ctx, ecs_world, key)
         ecs_world:set(
             nw.component.player_state_decay, constants.id.player
         )
+        nw.system.animation(ctx):play_once(entity, animations.player.upper_hit)
     elseif key == "down" then
         ecs_world:set(
             nw.component.player_state, constants.id.player, "lower_hit"
@@ -113,6 +115,7 @@ function rules.keypressed(ctx, ecs_world, key)
         ecs_world:set(
             nw.component.player_state_decay, constants.id.player
         )
+        nw.system.animation(ctx):play_once(entity, animations.player.lower_hit)
     end
 end
 

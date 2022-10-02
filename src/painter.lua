@@ -1,6 +1,7 @@
 local painter = {}
 
 painter.font = gfx.newFont(32)
+painter.small_font = gfx.newFont(16)
 
 function painter.paint_scene(ecs_world)
     local drawable = ecs_world:get_component_table(nw.component.drawable)
@@ -22,14 +23,12 @@ end
 
 function painter.paint_textbox(text, area, text_opts)
     local text_opts = text_opts or {font = painter.font, align = "center", valign = "center"}
+    local margin = text_opts.margin or 0
     gfx.push("all")
-    gfx.setColor(0.1, 0.2, 0.5, 0.3)
-    gfx.rectangle("fill", area:unpack())
+    gfx.setColor(0.1, 0.2, 0.5, 0.5)
+    gfx.rectangle("fill", area:expand(margin, margin):unpack())
     gfx.setColor(1, 1, 1)
-    painter.paint_text(
-        text, area.x, area.y, area.w, area.h, text_opts
-    )
-
+    painter.paint_text(text, area.x, area.y, area.w, area.h, text_opts)
     gfx.pop()
 end
 
