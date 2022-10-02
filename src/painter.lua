@@ -3,7 +3,7 @@ local painter = {}
 painter.font = gfx.newFont(32)
 painter.small_font = gfx.newFont(16)
 
-function painter.paint_scene(ecs_world)
+function painter.paint_actors(ecs_world)
     local drawable = ecs_world:get_component_table(nw.component.drawable)
 
     for id, func in pairs(drawable) do func(ecs_world:entity(id)) end
@@ -83,5 +83,59 @@ function painter.paint_time(shape, time, duration)
     gfx.rectangle("fill", -5, 0, 10, shape.h / 2)
     gfx.pop()
 end
+
+function painter.paint_ui(ecs_world)
+    local health = ecs_world:ensure(nw.component.health, constants.id.global)
+    local hit_count = ecs_world:ensure(
+        nw.component.hit_counter, constants.id.global
+    )
+
+    gfx.push("all")
+
+    gfx.translate(10, 10)
+
+    gfx.setFont(painter.font)
+    gfx.setColor(1, 1, 1)
+    gfx.printf(string.format("Score: %i", hit_count), 10, 0, 200, "left")
+
+    gfx.translate(0, 40)
+    gfx.setColor(1, 0, 0)
+
+    for i = 1, health do gfx.circle("fill", i * 15, 0, 5) end
+
+    gfx.pop()
+
+    gfx.push("all")
+
+    gfx.translate(gfx.getWidth(), 0)
+    gfx.translate(-75, 75)
+
+    local counter_box = spatial(0, 0, 10, 100)
+    local timer = ecs_world:ensure(nw.component.time_before_speedup, constants.id.global)
+    local clock_shape = spatial(0, 0, 100, 100)
+    painter.paint_time(clock_shape, timer.time, timer.duration)
+    gfx.pop()
+
+    local control_str = [[
+CONTROLS
+---------
+up :: hit up
+down :: hit down
+    ]]
+    local lower_corner = spatial(0, gfx.getHeight(), 200, 100)
+        :up()
+        :move(20, -20)
+    local opt = {font=painter.small_font, align = "left", valign="top", margin=10}
+    painter.paint_textbox(control_str, lower_corner, opt)
+end
+
+function painter.paint_scene(ecs_world, dim)
+    gfx.push("all")
+    gfx.scale(constants.scale, constants.scale)
+    painter.paint_background(dim)
+    painter.paint_actors(ecs_world)
+    gfx.pop()
+end
+
 
 return painter
