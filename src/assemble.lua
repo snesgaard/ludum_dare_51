@@ -29,7 +29,7 @@ local function projectile_draw(entity)
     gfx.pop()
 end
 
-function assemble.projectile(entity, x, y, bump_world)
+function assemble.projectile(entity, x, y, bump_world, ptype)
     entity
         :assemble(
             nw.system.collision().assemble.init_entity, x, y,
@@ -38,7 +38,7 @@ function assemble.projectile(entity, x, y, bump_world)
         :set(nw.component.drawable, projectile_draw)
         :set(nw.component.color, 1, 1, 1)
         :set(nw.component.base_velocity, -100, 0)
-        :set(nw.component.projectile, roll_projectile_type())
+        :set(nw.component.projectile, ptype)
 end
 
 local function hitzone_draw(entity)

@@ -34,4 +34,6 @@ end
 
 function component.die_on_empty() return true end
 
+function component.tomato_chance(c) return c or 0.1 end
+
 return component

@@ -8,7 +8,7 @@ function projectile_spawn.spawn(ecs_world, x, y, bump_world)
         :set(despawn_component)
 end
 
-function projectile_spawn.handle_update(dt, ecs_world, bump_world)
+function projectile_spawn.handle_update(ctx, dt, ecs_world, bump_world)
     local timer = ecs_world:ensure(
         nw.component.timer.create, constants.id.global, 0.5
     )
@@ -21,8 +21,13 @@ function projectile_spawn.handle_update(dt, ecs_world, bump_world)
     local lanes = constants.world_lanes()
     local rng = love.math.random(1, lanes:size())
     local lane_y = lanes[rng]
-    projectile_spawn.spawn(
-        ecs_world, constants.screen_width() - 50, lane_y, bump_world
+    --projectile_spawn.spawn(
+    --    ecs_world, constants.screen_width() - 50, lane_y, bump_world
+    --)
+
+    ctx:emit(
+        "spawn_projectile", ecs_world, constants.screen_width() - 50, lane_y,
+        bump_world
     )
 
     local thrower_entity = ecs_world:entity(constants.id.thrower)
@@ -48,7 +53,7 @@ function projectile_spawn.handle_observables(ctx, obs, ecs_world, ...)
     if not ecs_world then return end
 
     for _, dt in ipairs(obs.update:peek()) do
-        projectile_spawn.handle_update(dt, ecs_world, obs.bump_world:peek())
+        projectile_spawn.handle_update(ctx, dt, ecs_world, obs.bump_world:peek())
     end
 
     return projectile_spawn.handle_observables(ctx, obs, ...)

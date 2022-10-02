@@ -145,6 +145,29 @@ function rules.keypressed(ctx, ecs_world, key)
     end
 end
 
+local function roll_type(tomato_chance)
+    local r = love.math.random()
+    if r < tomato_chance then return "tomato" end
+    return "ball"
+end
+
+local function increment_chance(c) return c + 0.1 end
+local function decrement_chance(c) return math.max(0, c - 0.2) end
+
+function rules.spawn_projectile(ctx, ecs_world, args)
+    local ecs_world, x, y, bump_world = unpack(args)
+    local tomato_chance = ecs_world:ensure(
+        nw.component.tomato_chance, constants.id.global
+    )
+    local ptype = roll_type(tomato_chance)
+    ecs_world:map(
+        nw.component.tomato_chance, constants.id.global,
+        ptype == "tomato" and decrement_chance or increment_chance
+    )
+    ecs_world:entity()
+        :assemble(assemble.projectile, x, y, bump_world, ptype)
+end
+
 local api = {}
 
 function api.observables(ctx)
