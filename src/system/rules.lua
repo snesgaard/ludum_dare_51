@@ -24,7 +24,11 @@ function collision.misszone(ctx, ecs_world, colinfo)
     local already_counted = ecs_world:get(nw.component.already_counted, colinfo.item)
     if already_counted then return end
 
-    if item_projectile ~= "tomato" then ctx:emit("take_damage") end
+    if item_projectile ~= "tomato" then
+        ctx:emit("take_damage")
+    else
+        ctx:emit("increment_score")
+    end
     ecs_world:set(nw.component.already_counted, colinfo.item)
 end
 
@@ -46,6 +50,14 @@ function rules.take_damage(ctx, ecs_world)
     )
 end
 
+function rules.increment_score(ctx, ecs_world)
+    ecs_world:map(
+        nw.component.hit_counter,
+        constants.id.global,
+        function(c) return c + 1 end
+    )
+end
+
 function rules.hitzone_impact(ctx, ecs_world, args)
     local proj_type = ecs_world:get(nw.component.projectile, args.projectile)
 
@@ -56,11 +68,7 @@ function rules.hitzone_impact(ctx, ecs_world, args)
     end
 
     if proj_type == "ball" then
-        ecs_world:map(
-            nw.component.hit_counter,
-            constants.id.global,
-            function(c) return c + 1 end
-        )
+        ctx:emit("increment_score")
     elseif proj_type == "tomato" then
         ctx:emit("take_damage")
     end

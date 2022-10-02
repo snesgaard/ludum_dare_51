@@ -17,7 +17,7 @@ function painter.paint_finish(ecs_world)
     local upper = mid:up(0, 10, nil, 100)
     local down = mid:down(0, 10, nil, 100)
 
-    painter.paint_textbox("It's over!", upper)
+    painter.paint_textbox("Thanks for playing!", upper)
     painter.paint_textbox("Press R to replay!", down)
 end
 
