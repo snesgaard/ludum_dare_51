@@ -31,20 +31,12 @@ local function draw_ui(ecs_world)
     gfx.push("all")
 
     gfx.translate(gfx.getWidth(), 0)
-    gfx.translate(-20, 20)
+    gfx.translate(-75, 75)
 
     local counter_box = spatial(0, 0, 10, 100)
     local timer = ecs_world:ensure(nw.component.time_before_speedup, constants.id.global)
-    local s = timer.time / timer.duration
-
-    gfx.setColor(0.5, 0.5, 0.5)
-    gfx.rectangle("fill", counter_box:unpack())
-    gfx.setColor(1, 1, 1)
-    gfx.rectangle(
-        "fill",
-        counter_box.x, counter_box.y + counter_box.h * (1 - s),
-        counter_box.w, counter_box.h * s
-    )
+    local clock_shape = spatial(0, 0, 100, 100)
+    painter.paint_time(clock_shape, timer.time, timer.duration)
     gfx.pop()
 
     local control_str = [[
@@ -147,7 +139,7 @@ local function baseball(ctx)
         :filter(function(key) return key == "d" end)
         :reduce(function(state) return not state end, true)
 
-    ecs_world:entity():assemble(assemble.tomato_splat, 100, 100)
+    --ecs_world:entity():assemble(assemble.tomato_splat, 100, 100)
 
     while ctx:is_alive() and 0 < ecs_world:ensure(nw.component.health, constants.id.global) do
         if not pause:peek() then

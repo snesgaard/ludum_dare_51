@@ -66,4 +66,22 @@ function painter.paint_background(dim)
     gfx.pop()
 end
 
+function painter.paint_time(shape, time, duration)
+    local theme = {
+        bg = color("573976"),
+        fg = color("eedfc7")
+    }
+    local center = shape:center()
+    local angle = -(time / duration) * math.pi * 2 + math.pi
+
+    gfx.push("all")
+    gfx.translate(shape.x, shape.y)
+    gfx.setColor(theme.bg)
+    gfx.circle("fill", 0, 0, shape.w / 2, shape.h / 2)
+    gfx.rotate(angle)
+    gfx.setColor(theme.fg)
+    gfx.rectangle("fill", -5, 0, 10, shape.h / 2)
+    gfx.pop()
+end
+
 return painter
